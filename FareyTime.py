@@ -25,7 +25,7 @@ import scipy.stats as stats
 
 
 
-def help() :
+def HELP_MSG() :
   print("""
   Help Message for FareyTime.py by Nana Kiziriya:
 
