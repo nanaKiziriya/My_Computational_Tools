@@ -30,7 +30,7 @@ _fltVal = lambda tup : tup[0]/tup[1] # float value
 _ratStr = lambda tup : f"{tup[0]}/{tup[1]}" # rational string
 
 
-def fareyApprox(x:float,doPrint:bool) -> set:
+def fareyApprox(x:float,doPrint:bool,embedded=False) -> set:
 # FIND ALL GOOD RATIONAL APPROX. OF FLOAT (x)
 # best Farey neighbor approximations minimize score (DENOMINATOR*ERROR)
 # tuple format: (numer, denom, error, score)
@@ -38,16 +38,20 @@ def fareyApprox(x:float,doPrint:bool) -> set:
   # Local helper methods:
   # conditional printing
   def cond_print(s) :
-    if doPrint : print(s)
+    if doPrint : print(("\t" if embedded else "")+s)
   # tup = tuple(numer, denom, error, score)
   ndes = lambda n,d : (n,d,abs(n/d-x),abs(n/d-x)*d) # def. score in last element
   betterThan = lambda tup1,tup2 : tup1[3]<tup2[3] # boolean
   ratTup = lambda tup : (tup[0],tup[1])
 
   # Print explanation
-  cond_print(f"Finding good rational approximations for {x} using Farey neighbor mediants")
-  cond_print("Method: minimize the score (error*denominator)")
-  cond_print("Returns: set of good approximations\n")
+  if embedded :
+    cond_print(f"Approximating {x}:")
+  else :
+    cond_print(f"""Finding good rational approximations for {x} using Farey neighbor mediants
+    Method: minimize the score (error*denominator)
+    Returns: set of good approximations\n
+    """)
 
   # Variables
   # Farey neighbors of x
@@ -63,8 +67,8 @@ def fareyApprox(x:float,doPrint:bool) -> set:
     if betterThan(next,best):
       best = next
       approx_set.add(ratTup(best))
-      cond_print(f"best {_ratStr(best)} score {best[3]} in [{_ratStr(min)}, {_ratStr(max)}]")
-  cond_print(f"\nSet of approximations: {approx_set}\n")
+      cond_print(f"\tbest {_ratStr(best)} score {best[3]} in [{_ratStr(min)}, {_ratStr(max)}]")
+  cond_print(f"Set of approximations: {approx_set}\n")
   return approx_set;
 
 
@@ -175,11 +179,11 @@ def findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool) -> set:
   # OTIS must approx. ALL truncated intervals
   for itvl in set_intervals:
     if do_once==0:
-      OTIS = fareyApprox(itvl,doDeepPrint)
+      OTIS = fareyApprox(itvl,doDeepPrint,embedded=True)
       OTIS.discard((0,1)) # OTIS non-zero
       do_once=1
     else:
-      OTIS &= fareyApprox(itvl,doDeepPrint) # intersection <- OTIS shared by all
+      OTIS &= fareyApprox(itvl,doDeepPrint,embedded=True) # intersection <- OTIS shared by all
 
   cond_print(f"OTIS candidate(s) fitting crit#1: {ratListStr(OTIS)}\n")
 
@@ -211,6 +215,8 @@ def findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool) -> set:
   else :
     if len(OTIS)>0 : print("Very good time interval(s):",OTIS)
     else : print("This algorithm didn't find any good time intervals. Retry with message printing on, or check original measurement device calibration (in real life) to best confirm.")
+
+  cond_print("\n. . .\n\n")
 
   return OTIS
 
