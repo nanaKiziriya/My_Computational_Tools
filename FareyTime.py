@@ -26,6 +26,7 @@ import scipy.stats as stats
 # GLOBAL HELPER METHODS
 def fltVal(tup) -> float :
     return tup[0]/tup[1] # float value
+
 def _ratStr(tup) -> str:
     return f"{tup[0]}/{tup[1]}" # rational string
 
