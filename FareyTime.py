@@ -54,7 +54,7 @@ def fareyApprox(x:float,doPrint:bool) -> set:
   best = min if betterThan(min,max) else max
   approx_set = {ratTup(best)}
 
-  while(best[3]>0):
+  while best[3]>0 :
     next = ndes(min[0]+max[0], min[1]+max[1]) # mediant
     if fltVal(next)>x: max = next
     else: min = next
