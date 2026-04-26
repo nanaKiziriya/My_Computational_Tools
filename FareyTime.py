@@ -213,7 +213,7 @@ def findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool) -> set:
     elif len(OTIS)<1 : print("This method did not find any Original Time Interval Setting values, either due to algorithm flaw OR non-constant OTIS: check original measurement device calibration (in real life) to best confirm.")
     else : print("Exactly 1 Original Time Interval Setting found: best case scenario, may utilize for further computation.")
   else :
-    if len(OTIS)>0 : print("Very good time interval(s):",OTIS)
+    if len(OTIS)>0 : print("Very good time interval(s):",ratListStr(OTIS))
     else : print("This algorithm didn't find any good time intervals. Retry with message printing on, or check original measurement device calibration (in real life) to best confirm.")
 
   cond_print("\n. . .\n\n")
