@@ -24,8 +24,8 @@ import scipy.stats as stats
 
 
 # GLOBAL HELPER METHODS
-fltVal = lambda tup : tup[0]/tup[1] # float value
-ratStr = lambda tup : f"{tup[0]}/{tup[1]}" # rational string
+def _fltVal(tup) : return tup[0]/tup[1] # float value
+def _ratStr(tup) : return f"{tup[0]}/{tup[1]}" # rational string
 
 def fareyApprox(x:float,doPrint:bool) -> set:
 # FIND ALL GOOD RATIONAL APPROX. OF FLOAT (x)
@@ -54,12 +54,12 @@ def fareyApprox(x:float,doPrint:bool) -> set:
 
   while(best[3]>0):
     next = ndes(min[0]+max[0], min[1]+max[1]) # mediant
-    if fltVal(next)>x: max = next
+    if _fltVal(next)>x: max = next
     else: min = next
     if betterThan(next,best):
       best = next
       approx_set.add(ratTup(best))
-      cond_print(f"best {ratStr(best)} score {best[3]} in [{ratStr(min)}, {ratStr(max)}]")
+      cond_print(f"best {_ratStr(best)} score {best[3]} in [{_ratStr(min)}, {_ratStr(max)}]")
   cond_print(f"\nSet of approximations: {approx_set}\n")
   return approx_set;
 
@@ -160,7 +160,7 @@ def findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool) -> set:
   # Begin finding OTIS
 
   # Method to format printing rational tuples in OTIS
-  ratListStr = lambda iter_tuples : type(iter_tuples)(map(lambda _:ratStr(_),iter_tuples))
+  ratListStr = lambda iter_tuples : type(iter_tuples)(map(lambda _:_ratStr(_),iter_tuples))
 
   iter : " ".join(map(lambda _ : f"{_[0]}/{_[1]} , ",list(iter)))
 
@@ -189,13 +189,13 @@ def findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool) -> set:
 
   for candidate in set(OTIS): # Note: set(OTIS) to make copy of set, to avoid concurrent thread error when discarding candidates from original set
     cond_print(f"Measured time elapsed: {time_elapsed}")
-    theoretical_time_elapsed = num_intervals*fltVal(candidate)
+    theoretical_time_elapsed = num_intervals*_fltVal(candidate)
     difference = abs(time_elapsed - theoretical_time_elapsed)
     if difference > threshold :
       OTIS.discard(candidate)
-      cond_print(f"INVALID candidate: {ratStr(candidate)} = {fltVal(candidate)}")
+      cond_print(f"INVALID candidate: {_ratStr(candidate)} = {_fltVal(candidate)}")
     else :
-      cond_print(f" VALID  candidate: {ratStr(candidate)} = {fltVal(candidate)}")
+      cond_print(f" VALID  candidate: {_ratStr(candidate)} = {_fltVal(candidate)}")
 
   cond_print("")
 
