@@ -2,14 +2,16 @@
 # Originally developed on Google Colab, uploaded to GitHub
 
 # THIS PROGRAM PROVIDES:
+
 # fareyApprox(x:float,doPrint:bool) -> set:
     # returns (set) of good rational approximations for (x), using concepts from Diophantine approximation, particulary Farey neighbors/mediants
         # learned during CUNY Directed Reading Program, Spring 2025
-    # approximations range from (floor(x)) to (x), in terms of precision
+    # approximations range from (round(x)) to (x), in terms of precision
     # criteria: minimize (score), defined as (error)*(denominator)
-        # I came up with this criteria myself! :) Balances goal of minimizing error and minimizing denominator.
+        # I came up with this criteria myself :) Balances goal of minimizing error and minimizing denominator.
         # The choice of multiplication balances scale better than addition does, and provides stopping condition of (score==0)
-    # see function for further notes...
+    # see function for further notes on implementation...
+
 # findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool):
     # LEVERAGES fareyApprox()
     # returns (set) of good rational approximations - ideally just 1 tho - for a time-precise measurement device's original time interval setting (OTIS)
@@ -23,18 +25,47 @@ import scipy.stats as stats
 
 
 
+def help() :
+  print("""
+  Help Message for FareyTime.py by Nana Kiziriya:
+
+  fareyApprox(x:float,doPrint:bool) -> set:
+    returns (set) of good rational approximations for (x), using concepts from Diophantine approximation, particulary Farey neighbors/mediants
+    approximations range from (round(x)) to (x), in terms of precision
+    criteria: minimize (score), defined as (error)*(denominator)
+        I came up with this criteria myself :) Balances goal of minimizing error and minimizing denominator.
+        The choice of multiplication balances scale better than addition does, and provides stopping condition of (score==0)
+    see function in source code for further notes on implementation...
+
+  findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool):
+    LEVERAGES fareyApprox()
+    returns (set) of good rational approximations - ideally just 1 tho - for a time-precise measurement device's original time interval setting (OTIS)
+    further notes:
+    # OTIS - Original Time Interval Setting
+    # PURPOSE:
+      # Accepts ordered list (or pd.series) of truncated time interval measurements
+      # Finds original (rational) time interval using Farey neighbors/mediants
+    # TESTING CRITERIA:
+      # 1. OTIS must approx. ALL truncated intervals
+      # 2. [time_elapsed] must be valid approximation of [num_intervals*OTIS], given max possible rounding error during measurement of start and end times
+        # Note: given [num_decimals_MIN] (min decimal accuracy of measurement device), the overall error (btwn [time_elapsed] and [num_intervals*OTIS]) must be no more than 10**(-1*num_decimals_MIN), because measurement rounding of start and end times each contribute at MOST half of that
+    # REQUIRED ASSUMPTIONS:
+      # Original measurement device measures at precise time intervals
+      # Error is only a result of truncation
+      # Time intervals are (originally) all equal
+      # time intervals are non-zero
+      # Measurement device may round to fixed number of sigfigs, not fixed number of decimal places (i.e. num decimal places can decrease over time)
+  """)
+
 # GLOBAL HELPER METHODS
-# def _fltVal(tup) -> float :
-#   return tup[0]/tup[1] # float value
-# def _ratStr(tup) -> str:
-#   return f"{tup[0]}/{tup[1]}" # rational string
 _fltVal = lambda tup : tup[0]/tup[1] # float value
 _ratStr = lambda tup : f"{tup[0]}/{tup[1]}" # rational string
 
 
 def fareyApprox(x:float,doPrint:bool) -> set:
 # FIND ALL GOOD RATIONAL APPROX. OF FLOAT (x)
-# best Farey neighbor approximations minimize DENOMINATOR*ERROR
+# best Farey neighbor approximations minimize score (DENOMINATOR*ERROR)
+# tuple format: (numer, denom, error, score)
 
   # Local helper methods:
   # conditional printing
@@ -204,9 +235,13 @@ def findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool) -> set:
 
   cond_print("")
 
-  print("OTIS candidate(s) fitting ALL criteria:",ratListStr(OTIS))
-  if len(OTIS)>1 : print("More than 1 Original Time Interval Setting found: check original measurement device calibration to best confirm.")
-  elif len(OTIS)<1 : print("This method did not find any Original Time Interval Setting values, either due to algorithm flaw OR non-constant OTIS: check original measurement device calibration to best confirm.")
-  else : print("Exactly 1 Original Time Interval Setting found: best case scenario, may utilize for further computation.")
+  if doPrint :
+    print("OTIS candidate(s) fitting ALL criteria:",ratListStr(OTIS))
+    if len(OTIS)>1 : print("More than 1 Original Time Interval Setting found: check original measurement device calibration to best confirm.")
+    elif len(OTIS)<1 : print("This method did not find any Original Time Interval Setting values, either due to algorithm flaw OR non-constant OTIS: check original measurement device calibration (in real life) to best confirm.")
+    else : print("Exactly 1 Original Time Interval Setting found: best case scenario, may utilize for further computation.")
+  else :
+    if len(OTIS)>0 : print("Very good time interval(s):",OTIS)
+    else : print("This algorithm didn't find any good time intervals. Retry with message printing on, or check original measurement device calibration (in real life) to best confirm.")
 
   return OTIS
