@@ -12,16 +12,17 @@
         # The choice of multiplication balances scale better than addition does, and provides stopping condition of (score==0)
     # see function for further notes on implementation...
 
-# findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool):
+# findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) -> set:
     # LEVERAGES fareyApprox()
     # returns (set) of good rational approximations - ideally just 1 tho - for a time-precise measurement device's original time interval setting (OTIS)
+    # NOT to be used on lists of 2 or less.
     # see function for further notes...
 
 
 
 import numpy as np
-import pandas as pd
 import scipy.stats as stats
+from typing import Iterable
 
 
 
@@ -73,13 +74,14 @@ def fareyApprox(x:float,doPrint:bool=False,embedded=False) -> set:
 
 
 
-def findOTIS(series_times:pd.Series, doPrint:bool=False, doDeepPrint:bool=False) -> set:
+def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
 
 # OTIS - Original Time Interval Setting
 
 # PURPOSE:
-  # Accepts ordered list (or pd.series) of truncated time interval measurements
+  # Accepts Iterable (e.g. list, pd.Series, etc.) of truncated time interval measurements
   # Finds original (rational) time interval using Farey neighbors/mediants
+  # NOT to be used on lists of 2 or less.
 
 # TESTING CRITERIA:
   # 1. OTIS must approx. ALL truncated intervals
@@ -100,19 +102,23 @@ def findOTIS(series_times:pd.Series, doPrint:bool=False, doDeepPrint:bool=False)
   cond_print("OTIS - Original Time Interval Setting")
   cond_print("If your measurement device is calibrated to measure at even time intervals, but the recorded times are truncated, this algorithm finds the OTIS.\n")
 
+  if len(iter_times)<3 :
+    print("Must have at least 3 measurements, but the more the better.")
+    return {}
+
   # << PT 1 >>
   # Find measurement device's decimal place precision
   # Note: must jump through hoops to avoid floating point error confusion in order to avoid calculating farey neighbor for same time interval more than once; so annoying uggh
 
-  # series -> list
+  # Series -> list
   # e.g. [0.01, 0.02, ...]
-  list_times = series_times.tolist()
-  del series_times
-
+  list_times = list(iter_times)
+  del iter_times
+  
   # list of float -> list of str of float
   # e.g. ['0.01', '0.02', ...]
   list_times_STR = list(map(lambda _:_[0,_.find(" ")] if " " in _ else _,(str(list_times)[1:len(str(list_times))-1]).split(", ")))
-
+  
   assert(len(list_times)==len(list_times_STR))
 
   # list of str of float -> list of str of float's decimals
@@ -123,7 +129,7 @@ def findOTIS(series_times:pd.Series, doPrint:bool=False, doDeepPrint:bool=False)
               list_times_STR
           )
       )
-
+  
   assert(len(list_times_STR)==len(list_decimals_STR))
   for i in range(len(list_decimals_STR)) :
     assert(list_decimals_STR[i] in list_times_STR[i])
@@ -139,7 +145,7 @@ def findOTIS(series_times:pd.Series, doPrint:bool=False, doDeepPrint:bool=False)
       )
   num_decimals_MAX = max(set_decimal_lengths)
   num_decimals_MIN = min(set_decimal_lengths)
-
+  
   # << PT 2 >>
   # TIMES -> TIME INTERVALS
   # Note: use num_decimals_MAX for rounding time differences (intervals) to avoid repeats from floating point arithmetic error
@@ -153,7 +159,7 @@ def findOTIS(series_times:pd.Series, doPrint:bool=False, doDeepPrint:bool=False)
 
   list_intervals = [0]*(len(list_times)-1)
   for i in range(len(list_intervals)): list_intervals[i] = round(list_times[i+1]-list_times[i], num_decimals_MAX)
-
+  
   assert(len(list_times)-1==len(list_intervals))
 
   set_intervals = set(list_intervals)
@@ -196,7 +202,7 @@ def findOTIS(series_times:pd.Series, doPrint:bool=False, doDeepPrint:bool=False)
   threshold = 10**(-1*num_decimals_MIN)
 
   for candidate in set(OTIS): # Note: set(OTIS) to make copy of set, to avoid concurrent thread error when discarding candidates from original set
-    cond_print(f"Measured time elapsed: {time_elapsed}")
+    cond_print(f"Total time elapsed: {time_elapsed}")
     theoretical_time_elapsed = num_intervals*_fltVal(candidate)
     difference = abs(time_elapsed - theoretical_time_elapsed)
     if difference > threshold :
@@ -232,13 +238,13 @@ def HELP_MSG() :
           The choice of multiplication balances scale better than addition does, and provides stopping condition of (score==0)
       - see function in source code for further notes on implementation...
 
-    findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool):
+    findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) -> set:
       - LEVERAGES fareyApprox()
       - returns (set) of good rational approximations - ideally just 1 tho - for a time-precise measurement device's original time interval setting (OTIS)
       - further notes:
           # OTIS - Original Time Interval Setting
           # PURPOSE:
-            # Accepts ordered list (or pd.series) of truncated time interval measurements
+            # Accepts Iterable (e.g. list, pd.Series, etc.) of truncated time interval measurements
             # Finds original (rational) time interval using Farey neighbors/mediants
           # TESTING CRITERIA:
             # 1. OTIS must approx. ALL truncated intervals
