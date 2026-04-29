@@ -1,4 +1,4 @@
-# Completed by Nana Kiziriya (obviouslyyy) on April 26, 2026
+# Completed by Nana Kiziriya on April 26, 2026
 # Originally developed on Google Colab, uploaded to GitHub
 
 # THIS PROGRAM PROVIDES:
@@ -30,7 +30,7 @@ _fltVal = lambda tup : tup[0]/tup[1] # float value
 _ratStr = lambda tup : f"{tup[0]}/{tup[1]}" # rational string
 
 
-def fareyApprox(x:float,doPrint:bool,embedded=False) -> set:
+def fareyApprox(x:float,doPrint:bool=False,embedded=False) -> set:
 # FIND ALL GOOD RATIONAL APPROX. OF FLOAT (x)
 # best Farey neighbor approximations minimize score (DENOMINATOR*ERROR)
 # tuple format: (numer, denom, error, score)
@@ -73,7 +73,7 @@ def fareyApprox(x:float,doPrint:bool,embedded=False) -> set:
 
 
 
-def findOTIS(series_times:pd.Series, doPrint:bool, doDeepPrint:bool) -> set:
+def findOTIS(series_times:pd.Series, doPrint:bool=False, doDeepPrint:bool=False) -> set:
 
 # OTIS - Original Time Interval Setting
 
