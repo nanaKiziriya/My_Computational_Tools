@@ -100,10 +100,10 @@ def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
     if doPrint : print(s)
 
   cond_print("OTIS - Original Time Interval Setting")
-  cond_print("If your measurement device is calibrated to measure at even time intervals, but the recorded times are truncated, this algorithm finds the OTIS.\n")
+  cond_print("If your measurement device is calibrated to measure at even time intervals, this algorithm finds the OTIS.\n")
 
   if len(iter_times)<3 :
-    print("Must have at least 3 measurements, but the more the better.")
+    print("Must enter at least 3 time measurements.")
     return {}
 
   # << PT 1 >>
