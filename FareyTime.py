@@ -1,4 +1,4 @@
-# Last edited by Nana Kiziriya on April 29, 2026
+# Last edited by Nana Kiziriya on April 30, 2026
 # Originally developed on Google Colab, uploaded to GitHub
 
 
@@ -176,7 +176,7 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
   # Begin finding OTIS
 
   # Method to format printing rational tuples in OTIS
-  ratTupleStr = lambda iter_tuples : _ratStr(iter_tuples[0]) if len(iter_tuples)==1 else type(iter_tuples)(map(lambda _:_ratStr(_),iter_tuples))
+  ratTupleStr = lambda iter_tuples : _ratStr(tuple(iter_tuples)[0]) if len(iter_tuples)==1 else type(iter_tuples)(map(lambda _:_ratStr(_),iter_tuples))
 
   OTIS = set()
   do_once = 0
