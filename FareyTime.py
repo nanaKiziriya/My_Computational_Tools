@@ -12,7 +12,7 @@
         # I came up with this criteria myself :) Balances goal of minimizing error and minimizing denominator.
         # The choice of multiplication balances scale better than addition does, and provides stopping condition of (score==0)
     # see function for further notes on implementation...
-    
+
 # findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) -> set:
     # leverages fareyApproxShared()
     # returns (set) of good rational approximation(s) for series of approximately-evenly spaced values
@@ -40,8 +40,7 @@ def fareyApprox(x:float,doPrint:bool=False,embedded=False) -> set:
 
   # Local helper methods:
   # conditional printing
-  def cond_print(s) :
-    if doPrint : print(("\t" if embedded else "")+s)
+  cond_print = lambda *s : print(("\t" if embedded else ""),*s) if doPrint else None
   # tup = tuple(numer, denom, error, score)
   ndes = lambda n,d : (n,d,abs(n/d-x),abs(n/d-x)*d) # def. score in last element
   betterThan = lambda tup1,tup2 : tup1[3]<tup2[3] # boolean
@@ -98,8 +97,7 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
   # Measurement device may round to fixed number of sigfigs, not fixed number of decimal places (i.e. num decimal places can decrease over time)
 
   # Local helper method: conditional printing
-  def cond_print(s) :
-    if doPrint : print(s)
+  cond_print = lambda *s : print(*s) if doPrint else None
 
   cond_print("OTIS - Original Time Interval Setting")
   cond_print("If your measurement device is calibrated to measure at even time intervals, this algorithm finds the OTIS.\n")
@@ -116,11 +114,11 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
   # e.g. [0.01, 0.02, ...]
   tuple_times = tuple(iter_times)
   del iter_times
-  
+
   # tuple of float -> tuple of str of float
   # e.g. ['0.01', '0.02', ...]
   tuple_times_STR = tuple(map(lambda _:_[0,_.find(" ")] if " " in _ else _,(str(tuple_times)[1:len(str(tuple_times))-1]).split(", ")))
-  
+
   assert(len(tuple_times)==len(tuple_times_STR))
 
   # tuple of str of float -> tuple of str of float's decimals
@@ -131,7 +129,7 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
               tuple_times_STR
           )
       )
-  
+
   assert(len(tuple_times_STR)==len(tuple_decimals_STR))
   for i in range(len(tuple_decimals_STR)) :
     assert(tuple_decimals_STR[i] in tuple_times_STR[i])
@@ -147,7 +145,7 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
       )
   num_decimals_MAX = max(set_decimal_lengths)
   num_decimals_MIN = min(set_decimal_lengths)
-  
+
   # << PT 2 >>
   # TIMES -> TIME INTERVALS
   # Note: use num_decimals_MAX for rounding time differences (intervals) to avoid repeats from floating point arithmetic error
@@ -161,7 +159,7 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
 
   tuple_intervals = [0]*(len(tuple_times)-1)
   for i in range(len(tuple_intervals)): tuple_intervals[i] = round(tuple_times[i+1]-tuple_times[i], num_decimals_MAX)
-  
+
   assert(len(tuple_times)-1==len(tuple_intervals))
 
   set_intervals = set(tuple_intervals)
