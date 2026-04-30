@@ -176,7 +176,7 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
   # Begin finding OTIS
 
   # Method to format printing rational tuples in OTIS
-  ratTupleStr = lambda iter_tuples : type(iter_tuples)(map(lambda _:_ratStr(_),iter_tuples))
+  ratTupleStr = lambda iter_tuples : _ratStr(iter_tuples[0]) if len(iter_tuples)==1 else type(iter_tuples)(map(lambda _:_ratStr(_),iter_tuples))
 
   OTIS = set()
   do_once = 0
@@ -219,8 +219,9 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
     elif len(OTIS)<1 : print("This method did not find any Original Time Interval Setting values, either due to algorithm flaw OR non-constant OTIS: check original measurement device calibration (in real life) to best confirm.")
     else : print("Exactly 1 Original Time Interval Setting found: best case scenario, may utilize for further computation.")
   else :
-    if len(OTIS)>0 : print("Very good time interval(s):",ratTupleStr(OTIS))
-    else : print("This algorithm didn't find any good time intervals. Retry with message printing on, or check original measurement device calibration (in real life) to best confirm.")
+    if len(OTIS)==0 : print("This algorithm didn't find any good time intervals. Retry with message printing on, or check original measurement device calibration (in real life) to best confirm.")
+    if len(OTIS)==1 : cond_print("Time interval found:",ratTupleStr(OTIS))
+    else : print("Multiple valid time interval choices found:",ratTupleStr(OTIS))
 
   cond_print("\n. . .\n\n")
 
