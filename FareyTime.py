@@ -220,7 +220,7 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
     else : print("Exactly 1 Original Time Interval Setting found: best case scenario, may utilize for further computation.")
   else :
     if len(OTIS)==0 : print("This algorithm didn't find any good time intervals. Retry with message printing on, or check original measurement device calibration (in real life) to best confirm.")
-    if len(OTIS)==1 : cond_print("Time interval found:",ratTupleStr(OTIS))
+    elif len(OTIS)==1 : cond_print(f"Time interval found: {ratTupleStr(OTIS)})
     else : print("Multiple valid time interval choices found:",ratTupleStr(OTIS))
 
   cond_print("\n. . .\n\n")
