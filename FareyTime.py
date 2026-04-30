@@ -1,21 +1,23 @@
-# Completed by Nana Kiziriya on April 26, 2026
+# Last edited by Nana Kiziriya on April 29, 2026
 # Originally developed on Google Colab, uploaded to GitHub
 
-# THIS PROGRAM PROVIDES:
+
 
 # fareyApprox(x:float,doPrint:bool) -> set:
-    # returns (set) of good rational approximations for (x), using concepts from Diophantine approximation, particulary Farey neighbors/mediants
-        # learned during CUNY Directed Reading Program, Spring 2025
-    # approximations range from (round(x)) to (x), in terms of precision
-    # criteria: minimize (score), defined as (error)*(denominator)
+    # returns (set) of good rational approximations for (x), with format{denom:numer} because each approx. determined/defined by its denominator
+        # Using concepts from Diophantine approximation, particulary Farey neighbors/mediants learned during CUNY Directed Reading Program, Spring 2025
+    # works on {denom:(numer, error, score)}, returns {denom:numer}
+    # approximations range in precision from precision of (round(x)) to precision of (x)
+    # criteria: want to minimize the (score), defined as (error)*(denominator)
         # I came up with this criteria myself :) Balances goal of minimizing error and minimizing denominator.
         # The choice of multiplication balances scale better than addition does, and provides stopping condition of (score==0)
     # see function for further notes on implementation...
-
+    
 # findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) -> set:
-    # LEVERAGES fareyApprox()
-    # returns (set) of good rational approximations - ideally just 1 tho - for a time-precise measurement device's original time interval setting (OTIS)
-    # NOT to be used on lists of 2 or less.
+    # leverages fareyApproxShared()
+    # returns (set) of good rational approximation(s) for series of approximately-evenly spaced values
+    # USE CASE: time-precise measurement device's original time interval setting
+    # NOT to be used on lists of less than 3 values.
     # see function for further notes...
 
 
@@ -74,7 +76,7 @@ def fareyApprox(x:float,doPrint:bool=False,embedded=False) -> set:
 
 
 
-def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
+def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) -> set:
 
 # OTIS - Original Time Interval Setting
 
@@ -110,37 +112,37 @@ def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
   # Find measurement device's decimal place precision
   # Note: must jump through hoops to avoid floating point error confusion in order to avoid calculating farey neighbor for same time interval more than once; so annoying uggh
 
-  # Series -> list
+  # Series -> tuple
   # e.g. [0.01, 0.02, ...]
-  list_times = list(iter_times)
+  tuple_times = tuple(iter_times)
   del iter_times
   
-  # list of float -> list of str of float
+  # tuple of float -> tuple of str of float
   # e.g. ['0.01', '0.02', ...]
-  list_times_STR = list(map(lambda _:_[0,_.find(" ")] if " " in _ else _,(str(list_times)[1:len(str(list_times))-1]).split(", ")))
+  tuple_times_STR = tuple(map(lambda _:_[0,_.find(" ")] if " " in _ else _,(str(tuple_times)[1:len(str(tuple_times))-1]).split(", ")))
   
-  assert(len(list_times)==len(list_times_STR))
+  assert(len(tuple_times)==len(tuple_times_STR))
 
-  # list of str of float -> list of str of float's decimals
+  # tuple of str of float -> tuple of str of float's decimals
   # e.g. ['0.0123', ..., '1', '1.0234] -> ['0123', ..., '', '0234']
-  list_decimals_STR = list(
+  tuple_decimals_STR = tuple(
           map(
               lambda _ : _[_.find(".")+1 : len(_)] if ("." in _) else "",
-              list_times_STR
+              tuple_times_STR
           )
       )
   
-  assert(len(list_times_STR)==len(list_decimals_STR))
-  for i in range(len(list_decimals_STR)) :
-    assert(list_decimals_STR[i] in list_times_STR[i])
+  assert(len(tuple_times_STR)==len(tuple_decimals_STR))
+  for i in range(len(tuple_decimals_STR)) :
+    assert(tuple_decimals_STR[i] in tuple_times_STR[i])
 
-  # list of str of float -> min and max decimal length of float
+  # tuple of str of float -> min and max decimal length of float
   # e.g. ['0.01', '0.02', '0.029', ..., '123.01'] -> 3
   # Purpose: proper rounding and final error threshold
   set_decimal_lengths = set(
           map( # returns LENGTH of each decimal portion
                 len,
-              list_decimals_STR
+              tuple_decimals_STR
           )
       )
   num_decimals_MAX = max(set_decimal_lengths)
@@ -150,33 +152,31 @@ def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
   # TIMES -> TIME INTERVALS
   # Note: use num_decimals_MAX for rounding time differences (intervals) to avoid repeats from floating point arithmetic error
   # Available local vars:
-    # iterable: list_times,  list_times_STR
+    # iterable: tuple_times,  tuple_times_STR
     # num : num_decimals_MAX
     # bool: doPrint, doDeepPrint
   # Will create vars:
-    # list_intervals (rounded using num_decimals_MAX)
-    # set_intervals (set of list_intervals)
+    # tuple_intervals (rounded using num_decimals_MAX)
+    # set_intervals (set of tuple_intervals)
 
-  list_intervals = [0]*(len(list_times)-1)
-  for i in range(len(list_intervals)): list_intervals[i] = round(list_times[i+1]-list_times[i], num_decimals_MAX)
+  tuple_intervals = [0]*(len(tuple_times)-1)
+  for i in range(len(tuple_intervals)): tuple_intervals[i] = round(tuple_times[i+1]-tuple_times[i], num_decimals_MAX)
   
-  assert(len(list_times)-1==len(list_intervals))
+  assert(len(tuple_times)-1==len(tuple_intervals))
 
-  set_intervals = set(list_intervals)
+  set_intervals = set(tuple_intervals)
 
   cond_print(f"Set of recorded time intervals: {set_intervals}")
 
-  cond_print(f"Average of intervals: {stats.describe(list_intervals)[2]}")
-  cond_print(f"Variance of intervals (SHOULD BE LOW) : {stats.describe(list_intervals)[3]}") # high variance -> probably uneven time intervals
+  cond_print(f"Average of intervals: {stats.describe(tuple_intervals)[2]}")
+  cond_print(f"Variance of intervals (SHOULD BE LOW) : {stats.describe(tuple_intervals)[3]}") # high variance -> probably uneven time intervals
   cond_print("")
 
   # << PT. 3 >>
   # Begin finding OTIS
 
   # Method to format printing rational tuples in OTIS
-  ratListStr = lambda iter_tuples : type(iter_tuples)(map(lambda _:_ratStr(_),iter_tuples))
-
-  iter : " ".join(map(lambda _ : f"{_[0]}/{_[1]} , ",list(iter)))
+  ratTupleStr = lambda iter_tuples : type(iter_tuples)(map(lambda _:_ratStr(_),iter_tuples))
 
   OTIS = set()
   do_once = 0
@@ -191,14 +191,14 @@ def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
     else:
       OTIS &= fareyApprox(itvl,doDeepPrint,embedded=True) # intersection <- OTIS shared by all
 
-  cond_print(f"OTIS candidate(s) fitting crit#1: {ratListStr(OTIS)}\n")
+  cond_print(f"OTIS candidate(s) fitting crit#1: {ratTupleStr(OTIS)}\n")
 
 
   # < CRITERIA 2 >
   # [time_elapsed] must be valid approximation of [num_intervals*OTIS], given max possible rounding error during measurement of start and end times
 
-  time_elapsed = round(list_times[len(list_times)-1]-list_times[0],num_decimals_MAX)
-  num_intervals = len(list_intervals)
+  time_elapsed = round(tuple_times[len(tuple_times)-1]-tuple_times[0],num_decimals_MAX)
+  num_intervals = len(tuple_intervals)
   threshold = 10**(-1*num_decimals_MIN)
 
   for candidate in set(OTIS): # Note: set(OTIS) to make copy of set, to avoid concurrent thread error when discarding candidates from original set
@@ -214,17 +214,19 @@ def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
   cond_print("")
 
   if doPrint :
-    print("OTIS candidate(s) fitting ALL criteria:",ratListStr(OTIS))
+    print("OTIS candidate(s) fitting ALL criteria:",ratTupleStr(OTIS))
     if len(OTIS)>1 : print("More than 1 Original Time Interval Setting found: check original measurement device calibration to best confirm.")
     elif len(OTIS)<1 : print("This method did not find any Original Time Interval Setting values, either due to algorithm flaw OR non-constant OTIS: check original measurement device calibration (in real life) to best confirm.")
     else : print("Exactly 1 Original Time Interval Setting found: best case scenario, may utilize for further computation.")
   else :
-    if len(OTIS)>0 : print("Very good time interval(s):",ratListStr(OTIS))
+    if len(OTIS)>0 : print("Very good time interval(s):",ratTupleStr(OTIS))
     else : print("This algorithm didn't find any good time intervals. Retry with message printing on, or check original measurement device calibration (in real life) to best confirm.")
 
   cond_print("\n. . .\n\n")
 
   return OTIS
+
+
 
 def HELP_MSG() :
   print("""
