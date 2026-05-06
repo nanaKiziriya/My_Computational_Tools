@@ -6,4 +6,8 @@ This repository may contain some code developed as part of research funded by th
 
 
 PROGRAMS RELEVANT TO THIS NOTICE:
+
 *(None so far.)*
+
+All other programs in this repo are available for free under **GNU General Public License v3.0**
+(https://www.gnu.org/licenses/gpl-3.0.en.html)
