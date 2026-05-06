@@ -1,4 +1,4 @@
-# Last edited by Nana Kiziriya on April 30, 2026
+# Last edited by Nana Kiziriya on May 6, 2026
 # Originally developed on Google Colab, uploaded to GitHub
 
 
@@ -13,7 +13,7 @@
         # The choice of multiplication balances scale better than addition does, and provides stopping condition of (score==0)
     # see function for further notes on implementation...
 
-# findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) -> set:
+# findOTIS(iter_times:is_list_like, doPrint:bool=False, doDeepPrint:bool=False) -> set:
     # leverages fareyApproxShared()
     # returns (set) of good rational approximation(s) for series of approximately-evenly spaced values
     # USE CASE: time-precise measurement device's original time interval setting
@@ -24,7 +24,7 @@
 
 import numpy as np
 import scipy.stats as stats
-from typing import Iterable
+from pandas.api.types import is_list_like   # list, tuple, series, NOT string
 
 
 
@@ -75,12 +75,12 @@ def fareyApprox(x:float,doPrint:bool=False,embedded=False) -> set:
 
 
 
-def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) -> set:
+def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
 
 # OTIS - Original Time Interval Setting
 
 # PURPOSE:
-  # Accepts Iterable (e.g. list, pd.Series, etc.) of truncated time interval measurements
+  # Accepts list-like (e.g. list, pd.Series, etc.) of truncated time interval measurements
   # Finds original (rational) time interval using Farey neighbors/mediants
   # NOT to be used on lists of 2 or less.
 
@@ -95,6 +95,12 @@ def findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) ->
   # Time intervals are (originally) all equal
   # time intervals are non-zero
   # Measurement device may round to fixed number of sigfigs, not fixed number of decimal places (i.e. num decimal places can decrease over time)
+
+  try:
+    if not is_list_like(iter_times) :
+      raise ValueError('\'findOTIS()\' parameter \'iter_times\' should be list-like (e.g. tuple, list, np.array)')
+  except ValueError as e:
+      print(repr(e))
 
   # Local helper method: conditional printing
   cond_print = lambda *s : print(*s) if doPrint else None
@@ -239,13 +245,13 @@ def HELP_MSG() :
           The choice of multiplication balances scale better than addition does, and provides stopping condition of (score==0)
       - see function in source code for further notes on implementation...
 
-    findOTIS(iter_times:Iterable, doPrint:bool=False, doDeepPrint:bool=False) -> set:
+    findOTIS(iter_times:is_list_like, doPrint:bool=False, doDeepPrint:bool=False) -> set:
       - LEVERAGES fareyApprox()
       - returns (set) of good rational approximations - ideally just 1 tho - for a time-precise measurement device's original time interval setting (OTIS)
       - further notes:
           # OTIS - Original Time Interval Setting
           # PURPOSE:
-            # Accepts Iterable (e.g. list, pd.Series, etc.) of truncated time interval measurements
+            # Accepts list-like (e.g. list, pd.Series, etc.) of truncated time interval measurements
             # Finds original (rational) time interval using Farey neighbors/mediants
           # TESTING CRITERIA:
             # 1. OTIS must approx. ALL truncated intervals
