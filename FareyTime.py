@@ -22,7 +22,6 @@
 
 
 
-import sys
 import numpy as np
 import scipy.stats as stats
 from pandas.api.types import is_list_like   # list, tuple, series, NOT string
@@ -97,12 +96,7 @@ def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
   # time intervals are non-zero
   # Measurement device may round to fixed number of sigfigs, not fixed number of decimal places (i.e. num decimal places can decrease over time)
 
-  try:
-    if not is_list_like(iter_times) :
-      raise ValueError('\'findOTIS()\' parameter \'iter_times\' should be list-like (e.g. tuple, list, np.array)')
-  except ValueError as e:
-      print(repr(e))
-      sys.exit(1)
+  assert is_list_like(iter_times), '\'findOTIS()\' parameter \'iter_times\' should be list-like (e.g. tuple, list, np.array)'
 
   # Local helper method: conditional printing
   cond_print = lambda *s : print(*s) if doPrint else None
