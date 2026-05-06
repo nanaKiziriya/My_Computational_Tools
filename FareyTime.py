@@ -22,6 +22,7 @@
 
 
 
+import sys
 import numpy as np
 import scipy.stats as stats
 from pandas.api.types import is_list_like   # list, tuple, series, NOT string
@@ -101,6 +102,7 @@ def findOTIS(iter_times, doPrint:bool=False, doDeepPrint:bool=False) -> set:
       raise ValueError('\'findOTIS()\' parameter \'iter_times\' should be list-like (e.g. tuple, list, np.array)')
   except ValueError as e:
       print(repr(e))
+      sys.exit(1)
 
   # Local helper method: conditional printing
   cond_print = lambda *s : print(*s) if doPrint else None
