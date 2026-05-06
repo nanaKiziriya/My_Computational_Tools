@@ -9,5 +9,8 @@ PROGRAMS RELEVANT TO THIS NOTICE:
 
 *(None so far.)*
 
-All other programs in this repo are available for free under **GNU General Public License v3.0**
+<br>
+
+All other programs in this repo are free to use under the **GNU General Public License v3.0**.
+
 (https://www.gnu.org/licenses/gpl-3.0.en.html)
