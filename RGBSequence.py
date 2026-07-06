@@ -55,11 +55,11 @@ def color_sequence(num_colors=12, start=0, end=0,
 
   # Adjust end
   if end<=start : end+=12
-  if exclude_end : end -= (end-start)/n
+  if exclude_end : end -= (end-start)/num_colors
 
   # MAP: index -> time, for color fnct input
   my_colors = map(
-      lambda _ : _*(end-start)/(n-1)+start,
+      lambda _ : _*(end-start)/(num_colors-1)+start,
       range(num_colors))
 
   # MAP: time -> rgba, (rrr,ggg,bbb), w/ chnl_extreme
