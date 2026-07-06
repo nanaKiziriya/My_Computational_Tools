@@ -20,7 +20,8 @@ def gitModule(owner:str, repo:str, mod_file:str) :
   except :
     print(f"Something went wrong during gitModule({owner},{repo},{mod_file})")
 
-# exmaple of usage
+
+# Example of usage
 rgb = gitModule('nanaKiziriya','My_Computational_Tools','RGBSequence')
 # https://github.com/nanaKiziriya/My_Computational_Tools/blob/main/RGBSequence.py
 
