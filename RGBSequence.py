@@ -1,22 +1,14 @@
-import numpy as np
+import numpy as _np
 
-A = 3*255/np.pi # (vertical) stretch altitude to 127.5, for linear ver.
-B = np.pi/6 # (horizontal) stretch period to 12
-D = 255/2 # translates midline up to 127.5
+_A = 3*255/_np.pi # (vertical) stretch altitude to 127.5, for linear ver.
+_B = _np.pi/6 # (horizontal) stretch period to 12
+_D = 255/2 # translates midline up to 127.5
 
-
-# _channel_fncts = {
-#   'line' : # linear piecewise, ~plateaus
-#     lambda c,t,mlt,xtrm,mx : max(0,min(255,int(np.round(mlt*(xtrm* A*np.arcsin( np.cos(B*(t-4*c)) **(2*mx+1))+D) )))),
-#   'sine' : # sinusoidal, ~curves
-#     lambda c,t,mlt,xtrm,mx : max(0,min(255,int(np.round(mlt*(xtrm* 255/2*       np.cos(B*(t-4*c)) **(2*mx+1)+D)))))
-# }
-
-_channel_fncts = lambda ver,c,t,mlt,xtrm,mx : max(0,min(255,int(np.round(mlt*(xtrm* __fncts[ver]( np.cos(B*(t-4*c)) **(2*mx+1)) +D) ))))
+_channel_fncts = lambda ver,c,t,mlt,xtrm,mx : max(0,min(255,int(_np.round(mlt*(xtrm* __fncts[ver]( _np.cos(_B*(t-4*c)) **(2*mx+1)) +_D) ))))
 
 __fncts = {
   'line' : # linear piecewise, ~plateaus
-    lambda _:A*np.arcsin(_),
+    lambda _:_A*_np.arcsin(_),
   'sine' : # sinusoidal, ~curves
     lambda _:255/2*_
 }
@@ -74,22 +66,22 @@ def color_sequence(num_colors=12, start=0, end=0,
   my_colors = map(
       lambda t : tuple(map( _channel_fncts, [ver]*3, channels, [t]*3, chnl_mult,chnl_extreme,chnl_mix)),
       my_colors)
-  
+
   # MAP: rgb -> rgba, (rrr,ggg,bbb,aaa)
   my_colors = map(
       lambda rgb : rgb+tuple([alpha]),
       my_colors)
-  
+
   # MAP: rgba -> hex, '#rrggbbaa'
   my_colors = map(
       lambda rgba:'#'+''.join(tuple(map(
           lambda _:"{:02x}".format(_),
           rgba))),
       my_colors)
-  
+
   # Final touches
   my_colors = tuple(my_colors)
   if reverse : my_colors = tuple(reversed(my_colors))
-  
-  
+
+
   return my_colors
