@@ -4,11 +4,10 @@
 def gitModule(owner:str, repo:str, mod_file:str) :
 
   import shutil
-
   import importlib
-
   import os.path
   import numpy as np
+
   try :
     link = f"https://github.com/{owner}/{repo}.git"
     temp_dir = f"TEMP_{int(np.random.rand()*10**16)}"
@@ -20,6 +19,7 @@ def gitModule(owner:str, repo:str, mod_file:str) :
     return temp;
   except :
     print(f"Something went wrong during gitModule({owner},{repo},{mod_file})")
+
 ```
 
 
