@@ -1,4 +1,4 @@
-## One mediocre way to import in python:
+## One shoddy way to import in python:
 
 ```
 def gitModule(owner:str, repo:str, mod_file:str) :
@@ -19,6 +19,12 @@ def gitModule(owner:str, repo:str, mod_file:str) :
     return temp;
   except :
     print(f"Something went wrong during gitModule({owner},{repo},{mod_file})")
+
+# exmaple of usage
+rgb = gitModule('nanaKiziriya','My_Computational_Tools','RGBSequence')
+# https://github.com/nanaKiziriya/My_Computational_Tools/blob/main/RGBSequence.py
+
+print(rgb.color_sequence())
 
 ```
 
